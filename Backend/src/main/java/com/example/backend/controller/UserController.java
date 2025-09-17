@@ -8,7 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("${api.prefix}/user")
 public class UserController extends BaseController{
     @PostMapping("/register")
     public ResponseEntity<?> createUser(
