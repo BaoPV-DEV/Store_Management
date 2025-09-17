@@ -4,7 +4,21 @@ server:
 spring:
   application:
     name: Backend
-
+  datasource:
+    url:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password:
+  jpa:
+    # Show sql
+    show-sql: true
+    hibernate:
+      # No re-run entity to MySQL
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
   servlet:
     multipart:
       max-file-size: 10MB
