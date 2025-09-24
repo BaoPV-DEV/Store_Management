@@ -1,7 +1,13 @@
 package com.example.backend.controller;
 
 import com.example.backend.dtos.ProductDTO;
+import com.example.backend.dtos.ProductImageDTO;
+import com.example.backend.models.Product;
+import com.example.backend.models.ProductImage;
+import com.example.backend.repositories.IProductRepository;
+import com.example.backend.services.IProductService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,18 +29,9 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("${api.prefix}/products")
+@RequiredArgsConstructor
 public class ProductController {
-    @GetMapping("")
-    public ResponseEntity<String> getAllProducts(
-            @RequestParam int page,
-            @RequestParam int limit) {
-        return ResponseEntity.ok(String.format("Get product with page = %d, limit = %d", page, limit));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<String> getProductById(@PathVariable Long id) {
-        return ResponseEntity.ok(String.format("Get product with id = %d", id));
-    }
+    private final IProductService productService;
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createProductCategoryDTOs(
@@ -48,6 +45,8 @@ public class ProductController {
                         .toList();
                 return ResponseEntity.badRequest().body(resultErrorList);
             }
+            Product newProduct = productService.createProduct(productDTO);
+
             // Check size file
             List<MultipartFile> files = productDTO.getFiles();
             files = files == null ? new ArrayList<>() : files;
@@ -67,7 +66,11 @@ public class ProductController {
                 String fileName = storeFile(file);
                 // Save to product object to insert DB
                 // Save to BD table: product_images
-                //productDTO.setThumbnail(fileName);
+                ProductImage productImage = productService.createProductImage(
+                        newProduct.getId(),
+                        ProductImageDTO.builder()
+                                .imageUrl(fileName)
+                                .build());
             }
 
             return ResponseEntity.ok("Successfully created products!" + productDTO);
@@ -75,6 +78,20 @@ public class ProductController {
             return ResponseEntity.internalServerError().body("Error from server" + e.getMessage());
         }
     }
+
+    @GetMapping("")
+    public ResponseEntity<String> getAllProducts(
+            @RequestParam int page,
+            @RequestParam int limit) {
+        return ResponseEntity.ok(String.format("Get product with page = %d, limit = %d", page, limit));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<String> getProductById(@PathVariable Long id) {
+        return ResponseEntity.ok(String.format("Get product with id = %d", id));
+    }
+
+
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateProducts(@PathVariable Long id) {

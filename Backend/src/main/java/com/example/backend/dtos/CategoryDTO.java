@@ -7,5 +7,5 @@ import lombok.Data;
 
 public class CategoryDTO {
     @NotEmpty(message = "Name is not empty.")
-    private String nameCategory;
+    private String name;
 }
