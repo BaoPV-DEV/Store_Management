@@ -1,4 +1,4 @@
-package com.example.backend.dtos;
+package com.example.backend.dtos.request.users;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Data
 
-public class UserDTO {
+public class UserRegisterRequestDto {
     @Size(max = 100)
     @JsonProperty("fullname")
     private String fullName;

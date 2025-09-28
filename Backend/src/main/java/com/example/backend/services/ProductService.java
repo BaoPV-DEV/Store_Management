@@ -1,7 +1,8 @@
 package com.example.backend.services;
 
-import com.example.backend.dtos.ProductDTO;
-import com.example.backend.dtos.ProductImageDTO;
+import com.example.backend.dtos.request.products.ProductRequestDto;
+import com.example.backend.dtos.request.products.ProductImageRequestDto;
+import com.example.backend.dtos.response.product.ProductResponseDto;
 import com.example.backend.exceptions.DataNotFoundException;
 import com.example.backend.exceptions.InvalidParamException;
 import com.example.backend.models.Category;
@@ -15,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Service
 @RequiredArgsConstructor
 public class ProductService implements IProductService {
@@ -23,14 +26,14 @@ public class ProductService implements IProductService {
     private final ICategoryRepository categoryRepository;
 
     @Override
-    public Product createProduct(ProductDTO productDTO) {
+    public Product createProduct(ProductRequestDto productRequestDto) {
         // Check exist category
-        Category existingCategory = _checkExistCategory(productDTO.getCategoryId());
+        Category existingCategory = _checkExistCategory(productRequestDto.getCategoryId());
 
         Product newProduct = Product.builder()
-                .name(productDTO.getName())
-                .description(productDTO.getDescription())
-                .price(productDTO.getPrice())
+                .name(productRequestDto.getName())
+                .description(productRequestDto.getDescription())
+                .price(productRequestDto.getPrice())
                 .category(existingCategory)
                 .build();
 
@@ -44,22 +47,34 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Page<Product> getAllCategories(PageRequest pageRequest) {
-        return productRepository.findAll(pageRequest);
+    public Page<ProductResponseDto> getAllProducts(PageRequest pageRequest) {
+        return productRepository.findAll(pageRequest).map(product -> {
+            return ProductResponseDto
+                    .builder()
+                    .id(product.getId())
+                    .name(product.getName())
+                    .price(BigDecimal.valueOf(product.getPrice()))
+                    .description(product.getDescription())
+                    .thumbnail(product.getThumbnail())
+                    .categoryId(product.getCategory().getId())
+                    .createdAt(product.getCreatedAt())
+                    .updatedAt(product.getUpdatedAt())
+                    .build();
+        });
     }
 
     @Override
-    public Product updateProduct(Long productId, ProductDTO productDTO) {
+    public Product updateProduct(Long productId, ProductRequestDto productRequestDto) {
         Product product = getProductById(productId);
         if (product == null) {
             throw new DataNotFoundException("Product not found with id: " + productId);
         }
 
-        Category existingCategory = _checkExistCategory(productDTO.getCategoryId());
-        product.setName(productDTO.getName());
-        product.setDescription(productDTO.getDescription());
-        product.setPrice(productDTO.getPrice());
-        product.setThumbnail(productDTO.getThumbnail());
+        Category existingCategory = _checkExistCategory(productRequestDto.getCategoryId());
+        product.setName(productRequestDto.getName());
+        product.setDescription(productRequestDto.getDescription());
+        product.setPrice(productRequestDto.getPrice());
+        product.setThumbnail(productRequestDto.getThumbnail());
         product.setCategory(existingCategory);
         return productRepository.save(product);
     }
@@ -83,12 +98,12 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public ProductImage createProductImage(Long productId, ProductImageDTO productImageDTO) {
-        Product product = getProductById(productImageDTO.getProductId());
+    public ProductImage createProductImage(Long productId, ProductImageRequestDto productImageRequestDto) {
+        Product product = getProductById(productId);
 
         ProductImage newProductImage = ProductImage.builder()
                 .product(product)
-                .imageUrl(productImageDTO.getImageUrl())
+                .imageUrl(productImageRequestDto.getImageUrl())
                 .build();
 
         // Cant not insert 5 image to DB

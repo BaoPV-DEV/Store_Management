@@ -1,6 +1,6 @@
 package com.example.backend.services;
 
-import com.example.backend.dtos.UserDTO;
+import com.example.backend.dtos.request.users.UserRegisterRequestDto;
 import com.example.backend.exceptions.AlreadyExistsException;
 import com.example.backend.exceptions.DataNotFoundException;
 import com.example.backend.models.Role;
@@ -20,30 +20,30 @@ public class UserService implements IUserService{
     private final IRoleRepository roleRepository;
 
     @Override
-    public User createUser(UserDTO userDTO) {
-        boolean phoneExists = userRepository.existsByPhoneNumber(userDTO.getPhoneNumber());
+    public User createUser(UserRegisterRequestDto userRegisterRequestDto) {
+        boolean phoneExists = userRepository.existsByPhoneNumber(userRegisterRequestDto.getPhoneNumber());
         if (phoneExists) {
-            throw new AlreadyExistsException("Phone number already exists: " + userDTO.getPhoneNumber());
+            throw new AlreadyExistsException("Phone number already exists: " + userRegisterRequestDto.getPhoneNumber());
         }
 
         User user = User.builder()
-                .fullName(userDTO.getFullName())
-                .phoneNumber(userDTO.getPhoneNumber())
-                .dateOfBirth(userDTO.getDateOfBirth().toString())
-                .address(userDTO.getAddress())
-                .googleAccountId(userDTO.getGoogleAccountId())
-                .facebookAccountId(userDTO.getFacebookAccountId())
+                .fullName(userRegisterRequestDto.getFullName())
+                .phoneNumber(userRegisterRequestDto.getPhoneNumber())
+                .dateOfBirth(userRegisterRequestDto.getDateOfBirth().toString())
+                .address(userRegisterRequestDto.getAddress())
+                .googleAccountId(userRegisterRequestDto.getGoogleAccountId())
+                .facebookAccountId(userRegisterRequestDto.getFacebookAccountId())
                 .build();
 
-        Optional<Role> role = roleRepository.findById(userDTO.getRoleId());
+        Optional<Role> role = roleRepository.findById(userRegisterRequestDto.getRoleId());
         if (role.isEmpty()) {
             throw new DataNotFoundException("Role is not existed!");
         }
         user.setRole(role.get());
 
         // check longin by OAuth2
-        if(userDTO.getFacebookAccountId() == 0 && userDTO.getGoogleAccountId() == 0){
-            String password = userDTO.getPassword();
+        if(userRegisterRequestDto.getFacebookAccountId() == 0 && userRegisterRequestDto.getGoogleAccountId() == 0){
+            String password = userRegisterRequestDto.getPassword();
 //            String encodePassword = passwordEncode.encode(userDTO.getPassword());
 //            user.setPassword(encodePassword);
         }

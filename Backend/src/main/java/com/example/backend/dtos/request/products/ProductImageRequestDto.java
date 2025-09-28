@@ -1,4 +1,4 @@
-package com.example.backend.dtos;
+package com.example.backend.dtos.request.products;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Min;
@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class ProductImageDTO {
+public class ProductImageRequestDto {
     @JsonProperty("image_url")
     @Size(min = 5, max = 300, message = "ImageUrl must be less than or equal to 300 characters.")
     private String imageUrl;
