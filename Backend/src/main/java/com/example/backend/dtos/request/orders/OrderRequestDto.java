@@ -1,4 +1,4 @@
-package com.example.backend.dtos;
+package com.example.backend.dtos.request.orders;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Min;
@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 
-public class OrderDTO {
+public class OrderRequestDto {
     @JsonProperty("user_id")
     @Min(value = 1, message = "User's ID must be greater than 0.")
     private Long userId;

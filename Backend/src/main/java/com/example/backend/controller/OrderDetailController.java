@@ -1,7 +1,6 @@
 package com.example.backend.controller;
 
-import com.example.backend.dtos.OrderDTO;
-import com.example.backend.dtos.OrderDetailDTO;
+import com.example.backend.dtos.request.orders.OrderDetailRequestDto;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -15,7 +14,7 @@ import java.util.List;
 public class OrderDetailController {
     @PostMapping("")
     public ResponseEntity<?> createOrdersDetails(
-            @RequestBody @Valid OrderDetailDTO orderDetailDTO,
+            @RequestBody @Valid OrderDetailRequestDto orderDetailRequestDto,
             BindingResult result) {
         try{
             if (result.hasErrors()) {
@@ -25,7 +24,7 @@ public class OrderDetailController {
                         .toList();
                 return ResponseEntity.badRequest().body(resultErrorList);
             }
-            return ResponseEntity.ok("Successfully created order_detail!" + orderDetailDTO);
+            return ResponseEntity.ok("Successfully created order_detail!" + orderDetailRequestDto);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -58,7 +57,7 @@ public class OrderDetailController {
     // ADMIN
     public ResponseEntity<?> updateOrderDetails(
             @Valid @PathVariable("id") Long id,
-            @Valid @RequestBody OrderDetailDTO orderDetailDTO,
+            @Valid @RequestBody OrderDetailRequestDto orderDetailRequestDto,
             BindingResult result) {
         try{
             if (result.hasErrors()) {
@@ -68,7 +67,7 @@ public class OrderDetailController {
                         .toList();
                 return ResponseEntity.badRequest().body(resultErrorList);
             }
-            return ResponseEntity.ok(String.format("Update order detail with id = %d, new order_detail = %s", id, orderDetailDTO));
+            return ResponseEntity.ok(String.format("Update order detail with id = %d, new order_detail = %s", id, orderDetailRequestDto));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

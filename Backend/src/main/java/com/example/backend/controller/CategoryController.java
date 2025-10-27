@@ -1,6 +1,6 @@
 package com.example.backend.controller;
 
-import com.example.backend.dtos.CategoryDTO;
+import com.example.backend.dtos.request.categories.CategoryRequestDto;
 import com.example.backend.models.Category;
 import com.example.backend.services.CategoryService;
 import jakarta.validation.Valid;
@@ -21,12 +21,12 @@ public class CategoryController {
 
     /**
      * Create new category
-     * @param categoryDTO request
+     * @param categoryRequestDTO request
      * @param result error result
      * @return new category information
      */
     @PostMapping("")
-    public ResponseEntity<?> createCategories(@RequestBody @Valid CategoryDTO categoryDTO, BindingResult result) {
+    public ResponseEntity<?> createCategories(@RequestBody @Valid CategoryRequestDto categoryRequestDTO, BindingResult result) {
         if (result.hasErrors()) {
             List<String> resultErrorList = result.getAllErrors()
                     .stream()
@@ -35,8 +35,8 @@ public class CategoryController {
             return ResponseEntity.badRequest().body(resultErrorList);
         }
 
-        categoryService.createCategory(categoryDTO);
-        return ResponseEntity.ok("Successfully created categories!" + categoryDTO.getName());
+        categoryService.createCategory(categoryRequestDTO);
+        return ResponseEntity.ok("Successfully created categories!" + categoryRequestDTO.getName());
     }
 
     /**
@@ -52,13 +52,13 @@ public class CategoryController {
     /**
      * Update exist category
      * @param id id of category need update
-     * @param categoryDTO request
+     * @param categoryRequestDTO request
      * @param result error result
      * @return update category information
      */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCategories(@PathVariable Long id,
-                                              @RequestBody @Valid CategoryDTO categoryDTO, BindingResult result) {
+                                              @RequestBody @Valid CategoryRequestDto categoryRequestDTO, BindingResult result) {
         if (result.hasErrors()) {
             List<String> resultErrorList = result.getAllErrors()
                     .stream()
@@ -66,7 +66,7 @@ public class CategoryController {
                     .toList();
             return ResponseEntity.badRequest().body(resultErrorList);
         }
-        Category updateCategory = categoryService.updateCategory(id, categoryDTO);
+        Category updateCategory = categoryService.updateCategory(id, categoryRequestDTO);
         return ResponseEntity.ok("Update successfully with id = " + id + "Data: " + updateCategory);
     }
 

@@ -1,7 +1,7 @@
 package com.example.backend.controller;
 
-import com.example.backend.dtos.UserDTO;
-import com.example.backend.dtos.UserLoginDTO;
+import com.example.backend.dtos.request.users.UserRegisterRequestDto;
+import com.example.backend.dtos.request.users.UserLoginRequestDto;
 import com.example.backend.models.User;
 import com.example.backend.services.UserService;
 import jakarta.validation.Valid;
@@ -25,7 +25,7 @@ public class UserController extends BaseController{
 
     @PostMapping("/register")
     public ResponseEntity<?> createUser(
-            @Valid @RequestBody UserDTO userDTO,
+            @Valid @RequestBody UserRegisterRequestDto userRegisterRequestDto,
             BindingResult result) {
         if (result.hasErrors()) {
             List<String> resultErrorList = result.getAllErrors()
@@ -34,13 +34,13 @@ public class UserController extends BaseController{
                     .toList();
             return ResponseEntity.badRequest().body(resultErrorList);
         }
-        User newUser = userService.createUser(userDTO);
+        User newUser = userService.createUser(userRegisterRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(
-            @Valid @RequestBody UserLoginDTO userLoginDTO,
+            @Valid @RequestBody UserLoginRequestDto userLoginRequestDto,
             BindingResult result) {
         if (result.hasErrors()) {
             List<String> resultErrorList = result.getAllErrors()
@@ -49,7 +49,7 @@ public class UserController extends BaseController{
                     .toList();
             return ResponseEntity.badRequest().body(resultErrorList);
         }
-        String token = userService.login(userLoginDTO.getPhoneNumber(), userLoginDTO.getPassword());
+        String token = userService.login(userLoginRequestDto.getPhoneNumber(), userLoginRequestDto.getPassword());
         return ResponseEntity.ok("Login successfully!" + token);
     }
 }

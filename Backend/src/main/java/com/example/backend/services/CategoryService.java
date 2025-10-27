@@ -1,6 +1,6 @@
 package com.example.backend.services;
 
-import com.example.backend.dtos.CategoryDTO;
+import com.example.backend.dtos.request.categories.CategoryRequestDto;
 import com.example.backend.exceptions.DataNotFoundException;
 import com.example.backend.models.Category;
 import com.example.backend.repositories.ICategoryRepository;
@@ -17,8 +17,8 @@ public class CategoryService implements ICategoryService{
     private final ICategoryRepository categoryRepository;
 
     @Override
-    public Category createCategory(CategoryDTO categoryDTO) {
-        Category newCategory = Category.builder().name(categoryDTO.getName()).build();
+    public Category createCategory(CategoryRequestDto categoryRequestDTO) {
+        Category newCategory = Category.builder().name(categoryRequestDTO.getName()).build();
         return categoryRepository.save(newCategory);
     }
 
@@ -34,14 +34,14 @@ public class CategoryService implements ICategoryService{
     }
 
     @Override
-    public Category updateCategory(Long categoryId, CategoryDTO categoryDTO) {
+    public Category updateCategory(Long categoryId, CategoryRequestDto categoryRequestDTO) {
         Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
         if (optionalCategory.isEmpty()){
             throw new DataNotFoundException("Category not found with id: " + categoryId);
         }
 
         Category category = optionalCategory.get();
-        category.setName(categoryDTO.getName());
+        category.setName(categoryRequestDTO.getName());
         return categoryRepository.save(category);
     }
 
